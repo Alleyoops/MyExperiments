@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1635517547 source:e:\cb¡∑œ∞\catchippackage\main.c
+	<stdio.h>
+	<stdlib.h>
+	<winsock2.h>
+	<iphlpapi.h>
+
+1635522034 source:e:\cb\catchippackage\main.c
+	<stdio.h>
+	<stdlib.h>
+	<winsock2.h>
+	<iphlpapi.h>
+

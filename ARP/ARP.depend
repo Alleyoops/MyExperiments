@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1635500541 source:e:\cb¡∑œ∞\arp\main.c
+	<stdio.h>
+	<stdlib.h>
+	<winsock2.h>
+	<iphlpapi.h>
+
