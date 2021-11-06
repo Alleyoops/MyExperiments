@@ -5,3 +5,4 @@
 
 ## 大数据实验 (IDEA)
 * untitled1 操作hdfs的读写、上传、下载等
+* untitled2 读取hdfs文件内容，统计字符串个数(以空格分开)
