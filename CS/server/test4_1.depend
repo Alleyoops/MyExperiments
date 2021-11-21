@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1637322863 source:e:\b_mylearning\tr2\test4_1\main.cpp
+	<stdio.h>
+	<WinSock2.h>
+	<ctime>
+
