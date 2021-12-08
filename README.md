@@ -10,3 +10,4 @@
 * untitled3 untitled3是使用了MapReduce接口实现的untitled2的功能，输入输出地址是hadoop的文件路径
 * untitled4 实现从hadoop读取文件内容进行排序后输出新的内容到hadoop
 * untitled5 在untitled4的基础上，对两列数排序改为对三列数排序
+* untitled6 Hbase表的增删改查操作
