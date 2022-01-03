@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
-#include <iphlpapi.h>
+
 #define IO_RCVALL _WSAIOW(IOC_VENDOR,1)
 #define BUFFER_SIZE 65535
 typedef struct sockaddr_in sockaddr_in;
@@ -9,28 +9,28 @@ typedef struct in_addr in_addr;
 typedef struct sockaddr sockaddr;
 typedef struct
 {
-    unsigned char Version_HeaderLength; //°æ±¾(4Î»)+Ê×²¿³¤¶È(4Î»)
-    unsigned char TypeOfService;//·şÎñÀàĞÍ
-    unsigned short TotalLength;//×Ü³¤¶È
-    unsigned short Identification;//±êÊ¶
-    unsigned short Flags_Fragmentoffset;//±êÖ¾(3Î»)+·ÖÆ¬Æ«ÒÆ(13Î»)
-    unsigned char TimeToLive;//Éú´æÊ±¼ä
-    unsigned char Protocal ;//Ğ­Òé
-    unsigned short HeaderChecksum;//Ê×²¿Ğ£ÑéºÍ
-    unsigned long SourceAddress;//Ô´IPµØÖ·
-    unsigned long DestAddress;//Ä¿µÄIPµØÖ·
+    unsigned char Version_HeaderLength; //ç‰ˆæœ¬(4ä½)+é¦–éƒ¨é•¿åº¦(4ä½)
+    unsigned char TypeOfService;//æœåŠ¡ç±»å‹
+    unsigned short TotalLength;//æ€»é•¿åº¦
+    unsigned short Identification;//æ ‡è¯†
+    unsigned short Flags_Fragmentoffset;//æ ‡å¿—(3ä½)+åˆ†ç‰‡åç§»(13ä½)
+    unsigned char TimeToLive;//ç”Ÿå­˜æ—¶é—´
+    unsigned char Protocal ;//åè®®
+    unsigned short HeaderChecksum;//é¦–éƒ¨æ ¡éªŒå’Œ
+    unsigned long SourceAddress;//æºIPåœ°å€
+    unsigned long DestAddress;//ç›®çš„IPåœ°å€
 } IPHEADER;
 typedef struct
 {
-    USHORT usSourcePort;//16Î»Ô´¶Ë¿Ú
-    USHORT usDestPort;//16Î»Ä¿µÄ¶Ë¿Ú
-    ULONG dwSeq;//ĞòÁĞºÅ
-    ULONG dwAck;//È·ÈÏºÅ
-    UCHAR ucLength;//4Î»Ê×²¿³¤¶È+4Î»±£Áô×ÖÒ»¹²8Î»
-    UCHAR ucFlag;//6Î»±êÖ¾Î»
-    USHORT usWindow;//16Î»´°¿Ú´óĞ¡
-    USHORT usCheckSum;//16Î»Ğ£ÑéºÍ
-    USHORT usUrgent;//16Î»½ô¼±Êı¾İÆ«ÒÆÁ¿
+    USHORT usSourcePort;//16ä½æºç«¯å£
+    USHORT usDestPort;//16ä½ç›®çš„ç«¯å£
+    ULONG dwSeq;//åºåˆ—å·
+    ULONG dwAck;//ç¡®è®¤å·
+    UCHAR ucLength;//4ä½é¦–éƒ¨é•¿åº¦+4ä½ä¿ç•™å­—ä¸€å…±8ä½
+    UCHAR ucFlag;//6ä½æ ‡å¿—ä½
+    USHORT usWindow;//16ä½çª—å£å¤§å°
+    USHORT usCheckSum;//16ä½æ ¡éªŒå’Œ
+    USHORT usUrgent;//16ä½ç´§æ€¥æ•°æ®åç§»é‡
     UINT unMssOpt;
     USHORT usNopOpt;
     USHORT usSackOpt;
@@ -38,45 +38,47 @@ typedef struct
 void Print(IPHEADER *piphdr,TCPHEADER *tcp);
 int main()
 {
-    //³õÊ¼»¯Socket
+    //åˆå§‹åŒ–Socket
     WSADATA wsData;
     WSAStartup(MAKEWORD(2,2),&wsData);
-    //´´½¨Ô­Ê¼Ì×½Ó×Ö raw socket
+    //åˆ›å»ºåŸå§‹å¥—æ¥å­— raw socket
     SOCKET sock;
     sock = WSASocket(AF_INET,SOCK_RAW,IPPROTO_IP,NULL,0,WSA_FLAG_OVERLAPPED);
-    //°ó¶¨Ì×½Ó×Ö
-    char localName[256];//±¾µØ»úÆ÷Ãû
-    gethostname(localName,256);//»ñÈ¡Ö÷»úÃû
-    HOSTENT *pHost;//Ö¸ÏòÖ÷»úĞÅÏ¢µÄÖ¸Õë
-    pHost=gethostbyname(localName);//»ñÈ¡±¾µØIPµØÖ·ÁĞ±í£¬ĞèÒªÃ¶¾Ù³öÀ´
-    for(int i=0; i<sizeof(pHost->h_addr_list)-1; i++)
+    //ç»‘å®šå¥—æ¥å­—
+    char localName[256];//æœ¬åœ°æœºå™¨å
+    gethostname(localName,256);//è·å–ä¸»æœºå
+    HOSTENT *pHost;//æŒ‡å‘ä¸»æœºä¿¡æ¯çš„æŒ‡é’ˆ
+    pHost=gethostbyname(localName);//è·å–æœ¬åœ°IPåœ°å€åˆ—è¡¨ï¼Œéœ€è¦æšä¸¾å‡ºæ¥
+    for(int i=0; i<pHost->h_length-1; i++)
     {
+        //æ‰“å°IPåœ°å€
         printf("IP addr %d: %s\n", i, inet_ntoa( *(in_addr*)pHost->h_addr_list[i] ) );
     }
     int choose = 0;
-    //scanf("%d",&choose);
+    scanf("%d",&choose);
     sockaddr_in addr_in;
     addr_in.sin_family=AF_INET;
-    addr_in.sin_port=htons(8000);
-    addr_in.sin_addr=*(in_addr *)pHost->h_addr_list[2];
-    bind(sock,(sockaddr *)&addr_in,sizeof(addr_in));//°ó¶¨Ô­Ê¼Ì×½Ó×Öµ½±¾»úµØÖ·
-    //ÉèÖÃÍø¿¨Îª»ìÔÓÄ£Ê½
+    addr_in.sin_port=htons(8000);//è½¬æ¢ä¸ºç½‘ç»œå­—èŠ‚åº
+    addr_in.sin_addr=*(in_addr *)pHost->h_addr_list[choose];//é€‰æ‹©ä¸»æœºIPåœ°å€
+    bind(sock,(sockaddr *)&addr_in,sizeof(addr_in));//ç»‘å®šåŸå§‹å¥—æ¥å­—åˆ°æœ¬æœºåœ°å€
+    //è®¾ç½®ç½‘å¡ä¸ºæ··æ‚æ¨¡å¼
     DWORD dwBufferLen[10];
     DWORD dwBufferInLen=1;
     DWORD dwBytesReturned=0;
     WSAIoctl(sock,IO_RCVALL,&dwBufferInLen,sizeof(dwBufferInLen),dwBufferLen,sizeof(dwBufferLen),&dwBytesReturned,NULL,NULL);
-    //½ÓÊÜIPÊı¾İ°ü
-    char buffer[BUFFER_SIZE];//½ÓÊÜ»º´æÇø
+    //æ¥å—IPæ•°æ®åŒ…
+    char buffer[BUFFER_SIZE];//æ¥å—ç¼“å­˜åŒº
     while(1)
     {
         int nPacketSize=recv(sock,buffer,BUFFER_SIZE,0);
+        //æ‰¾å¯»Socketå‡ºé”™ä»£ç 
         //int err = WSAGetLastError();
         //printf("%d\n", err);
         //printf("%d ", nPacketSize);
         if (nPacketSize>0)
         {
             IPHEADER *pIpHdr;
-            pIpHdr=(IPHEADER *)buffer;//Ö¸ÕëÇ¿ÖÆ×ª»»ÎªIPHEADERÊı¾İ½á¹¹
+            pIpHdr=(IPHEADER *)buffer;//æŒ‡é’ˆå¼ºåˆ¶è½¬æ¢ä¸ºIPHEADERæ•°æ®ç»“æ„
             TCPHEADER *tcp=(TCPHEADER *)(buffer+((pIpHdr->Version_HeaderLength)&0x0f)*4);
             Print(pIpHdr,tcp);
         }
@@ -89,57 +91,55 @@ void Print(IPHEADER *piphdr,TCPHEADER *tcp)
     switch((piphdr->Version_HeaderLength)>>4)
     {
     case 4:
-        printf("°æ±¾£ºIPV%d\n",(piphdr->Version_HeaderLength)>>4);
+        printf("ç‰ˆæœ¬ï¼šIPV%d\n",(piphdr->Version_HeaderLength)>>4);
         break;
     case 6:
-        printf("°æ±¾£ºIPV%d\n",(piphdr->Version_HeaderLength)>>4);
+        printf("ç‰ˆæœ¬ï¼šIPV%d\n",(piphdr->Version_HeaderLength)>>4);
         break;
     default:
-        printf("°æ±¾£ºIPV%d\n",(piphdr->Version_HeaderLength)>>4);
+        printf("ç‰ˆæœ¬ï¼šIPV%d\n",(piphdr->Version_HeaderLength)>>4);
         break;
     }
-    printf("±¨Í·³¤¶È£º%d¸ö×Ö½Ú\n",((piphdr->Version_HeaderLength)&0x0f)*4);
-    printf("×Ü³¤¶È£º%d¸ö×Ö½Ú\n",piphdr->TotalLength);
+    printf("æŠ¥å¤´é•¿åº¦ï¼š%dä¸ªå­—èŠ‚\n",((piphdr->Version_HeaderLength)&0x0f)*4);
+    printf("æ€»é•¿åº¦ï¼š%dä¸ªå­—èŠ‚\n",piphdr->TotalLength);
     switch((piphdr->Protocal))
     {
     case 1:
-        printf("Ğ­ÒéÀàĞÍ£ºICMP\n");
+        printf("åè®®ç±»å‹ï¼šICMP\n");
         break;
     case 2:
-        printf("Ğ­ÒéÀàĞÍ£ºIGMP\n");
+        printf("åè®®ç±»å‹ï¼šIGMP\n");
         break;
     case 6:
-        printf("Ğ­ÒéÀàĞÍ£ºTCP\n");
-        printf("Ô´¶Ë¿Ú£º%x\n",tcp->usSourcePort);
-        printf("Ô´¶Ë¿Ú£º%x\n",htons(tcp->usSourcePort));//º¯ÊıÃû²»Í¬¡£º¯ÊıµÄÊµÏÖÓ¦¸ÃÊÇÒ»ÑùµÄ
-        printf("Ô´¶Ë¿Ú£º%d\n",ntohs(tcp->usSourcePort));
-        //printf("Ä¿µÄ¶Ë¿Ú£º%d\n",*((USHORT *)tcp+1));
-        printf("Ä¿µÄ¶Ë¿Ú£º%d\n",ntohs(tcp->usDestPort));
-        printf("Ä¿µÄ¶Ë¿Ú£º%d\n",htons(tcp->usDestPort));
+        printf("åè®®ç±»å‹ï¼šTCP\n");
+        printf("æºç«¯å£ï¼š%d\n",ntohs(tcp->usSourcePort));
+        //printf("ç›®çš„ç«¯å£ï¼š%d\n",*((USHORT *)tcp+1));
+        printf("ç›®çš„ç«¯å£ï¼š%d\n",ntohs(tcp->usDestPort));
         if(ntohs(tcp->usDestPort)==80)
         {
         char *temptcp=(char *)tcp;
         char *pchar=temptcp+(tcp->ucLength>>4)*4;
-        printf("TCPÊı¾İ²¿·Ö£º%s\n",pchar);
+        printf("TCPæ•°æ®éƒ¨åˆ†ï¼š%s\n",pchar);//æ‰“å°Httpè¯·æ±‚æ¶ˆæ¯
         }
         break;
     case 8:
-        printf("Ğ­ÒéÀàĞÍ£ºEGP\n");
+        printf("åè®®ç±»å‹ï¼šEGP\n");
         break;
     case 17:
-        printf("Ğ­ÒéÀàĞÍ£ºUDP\n");
+        printf("åè®®ç±»å‹ï¼šUDP\n");
         break;
     case 41:
-        printf("Ğ­ÒéÀàĞÍ£ºIPv6\n");
+        printf("åè®®ç±»å‹ï¼šIPv6\n");
         break;
     case 89:
-        printf("Ğ­ÒéÀàĞÍ£ºOSPF\n");
+        printf("åè®®ç±»å‹ï¼šOSPF\n");
         break;
     }
+    //ç§»ä½æ³•è¾“å‡ºIPåœ°å€
     ULONG temp=piphdr->SourceAddress;
-    printf("Ô´IPµØÖ·£º%d.%d.%d.%d\n",temp&0x000000ff,(temp>>8)&0x0000ff,(temp>>16)&0x00ff,(temp>>24)&0xff);
+    printf("æºIPåœ°å€ï¼š%d.%d.%d.%d\n",temp&0x000000ff,(temp>>8)&0x0000ff,(temp>>16)&0x00ff,(temp>>24)&0xff);
     ULONG temp2=piphdr->DestAddress;
-    printf("Ä¿µÄIPµØÖ·£º%d.%d.%d.%d\n",temp2&0x000000ff,(temp2>>8)&0x0000ff,(temp2>>16)&0x00ff,(temp2>>24)&0xff);
+    printf("ç›®çš„IPåœ°å€ï¼š%d.%d.%d.%d\n",temp2&0x000000ff,(temp2>>8)&0x0000ff,(temp2>>16)&0x00ff,(temp2>>24)&0xff);
     printf("\n");
 }
 
