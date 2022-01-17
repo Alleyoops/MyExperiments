@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1641457981 source:e:\codetest\webserver\main.cpp
+	<stdio.h>
+	<iphlpapi.h>
+	<WinSock2.h>
+
